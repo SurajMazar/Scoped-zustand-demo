@@ -18,14 +18,17 @@ import {
 } from '@xyflow/react';
 
 /**
- * Custom node component that allows inline editing of the label.
+ * Custom node component that allows inline editing of both the label and description.
  * StopPropagation is used to prevent React Flow from capturing 
  * keystrokes (like backspace) while the user is typing.
  */
 const EditableNode = ({ data, id, selected }: NodeProps) => {
+  const label = (data.label as string) || '';
+  const description = (data.description as string) || '';
+
   return (
     <div className={`
-      p-3 rounded-xl bg-white border-2 transition-all duration-200 min-w-[180px]
+      p-4 rounded-xl bg-white border-2 transition-all duration-200 min-w-[240px]
       ${selected ? 'border-blue-500 shadow-xl ring-4 ring-blue-50' : 'border-slate-200 shadow-sm'}
     `}>
       <Handle 
@@ -34,27 +37,46 @@ const EditableNode = ({ data, id, selected }: NodeProps) => {
         className="!bg-slate-300 !w-3 !h-3 !border-2 !border-white" 
       />
       
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-3">
         <div className="flex justify-between items-center">
           <label className="text-[9px] uppercase font-black text-slate-400 tracking-widest">
-            Node ID: {id.split('-').pop()}
+            Block ID: {id.split('-').pop()}
           </label>
           {selected && (
             <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
           )}
         </div>
-        <input 
-          value={data.label as string || ''}
-          onChange={(e) => {
-            if (typeof data.onChange === 'function') {
-              data.onChange(id, e.target.value);
-            }
-          }}
-          // Prevent React Flow from handling shortcuts while typing
-          onKeyDown={(e) => e.stopPropagation()}
-          className="bg-slate-50 border border-slate-100 text-sm font-bold focus:ring-2 focus:ring-blue-100 focus:bg-white rounded-lg px-2 py-2 outline-none w-full text-slate-800 transition-all"
-          placeholder="Block Name"
-        />
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Title</label>
+          <input 
+            value={label}
+            onChange={(e) => {
+              if (typeof data.onChange === 'function') {
+                data.onChange(id, 'label', e.target.value);
+              }
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+            className="bg-slate-50 border border-slate-100 text-sm font-bold focus:ring-2 focus:ring-blue-100 focus:bg-white rounded-lg px-2 py-1.5 outline-none w-full text-slate-800 transition-all"
+            placeholder="Node Title"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Description</label>
+          <textarea 
+            value={description}
+            onChange={(e) => {
+              if (typeof data.onChange === 'function') {
+                data.onChange(id, 'description', e.target.value);
+              }
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+            rows={2}
+            className="bg-slate-50 border border-slate-100 text-xs focus:ring-2 focus:ring-blue-100 focus:bg-white rounded-lg px-2 py-1.5 outline-none w-full text-slate-600 transition-all resize-none"
+            placeholder="What does this node do?"
+          />
+        </div>
       </div>
 
       <Handle 
@@ -74,13 +96,14 @@ const FlowEditor: React.FC = () => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
-  const onLabelChange = useCallback((id: string, newLabel: string) => {
+  // Updated change handler to handle different fields
+  const onNodeDataChange = useCallback((id: string, field: string, value: string) => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === id) {
           return {
             ...node,
-            data: { ...node.data, label: newLabel },
+            data: { ...node.data, [field]: value },
           };
         }
         return node;
@@ -93,20 +116,32 @@ const FlowEditor: React.FC = () => {
       {
         id: 'node-1',
         type: 'editable',
-        data: { label: 'Input Source', onChange: onLabelChange },
+        data: { 
+          label: 'Data Ingestion', 
+          description: 'Fetch raw events from external API endpoints.',
+          onChange: onNodeDataChange 
+        },
         position: { x: 250, y: 50 },
       },
       {
         id: 'node-2',
         type: 'editable',
-        data: { label: 'Logic Processor', onChange: onLabelChange },
-        position: { x: 100, y: 250 },
+        data: { 
+          label: 'Data Cleaning', 
+          description: 'Filter out duplicates and normalize timestamps.',
+          onChange: onNodeDataChange 
+        },
+        position: { x: 100, y: 280 },
       },
       {
         id: 'node-3',
         type: 'editable',
-        data: { label: 'Export Sink', onChange: onLabelChange },
-        position: { x: 400, y: 250 },
+        data: { 
+          label: 'Metric Storage', 
+          description: 'Persist aggregated results to Postgres.',
+          onChange: onNodeDataChange 
+        },
+        position: { x: 400, y: 280 },
       },
     ];
 
@@ -117,7 +152,7 @@ const FlowEditor: React.FC = () => {
 
     setNodes(initialNodes);
     setEdges(initialEdges);
-  }, [onLabelChange]);
+  }, [onNodeDataChange]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -143,18 +178,22 @@ const FlowEditor: React.FC = () => {
     const newNode: Node = {
       id,
       type: 'editable',
-      data: { label: `New Node`, onChange: onLabelChange },
+      data: { 
+        label: `New Logic Block`, 
+        description: 'New step in the pipeline.',
+        onChange: onNodeDataChange 
+      },
       position: { x: Math.random() * 400, y: Math.random() * 400 },
     };
     setNodes((nds) => nds.concat(newNode));
-  }, [onLabelChange]);
+  }, [onNodeDataChange]);
 
   return (
     <div className="w-full h-full flex flex-col bg-slate-50">
       <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between shadow-sm z-10">
         <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight">Flow Pipeline</h2>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Interactive Node Editor</p>
+          <h2 className="text-xl font-black text-slate-900 tracking-tight">System Flow Designer</h2>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Architect your logic visually</p>
         </div>
         
         <div className="flex gap-4">
@@ -165,10 +204,10 @@ const FlowEditor: React.FC = () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            Add Node
+            Create Node
           </button>
           <div className="flex items-center px-4 py-2 bg-slate-100 rounded-xl border border-slate-200">
-            <span className="text-slate-800 text-xs font-black">{nodes.length} Blocks Active</span>
+            <span className="text-slate-800 text-xs font-black">{nodes.length} Components</span>
           </div>
         </div>
       </div>
@@ -183,9 +222,9 @@ const FlowEditor: React.FC = () => {
           nodeTypes={nodeTypes}
           fitView
           snapToGrid
-          snapGrid={[20, 20]}
+          snapGrid={[15, 15]}
         >
-          <Background color="#cbd5e1" gap={20} variant="lines" />
+          <Background color="#cbd5e1" gap={30} variant="dots" />
           <Controls className="!bg-white !border-slate-200 !shadow-2xl !rounded-xl !overflow-hidden !p-1" />
         </ReactFlow>
       </div>
