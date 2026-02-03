@@ -1,22 +1,35 @@
 
 import React, { createContext, useContext, useRef } from 'react';
 import { createStore, StoreApi, useStore } from 'zustand';
-import { FormState } from '../types.ts';
+import { FormState, FieldMap } from '../types.ts';
 
 // The type for our vanilla store API
 export type FormStoreApi = StoreApi<FormState>;
 
-// Factory function to create a new vanilla store instance
-export const createFormStore = () => {
+interface CreateStoreOptions {
+  initialFields?: FieldMap;
+  onSetField?: (key: string, value: string) => void;
+}
+
+// Factory function updated to accept initial state and callbacks from props
+export const createFormStore = (options: CreateStoreOptions = {}) => {
+  const { initialFields, onSetField } = options;
+  
   return createStore<FormState>((set) => ({
-    fields: new Map<string, { value: string }>(),
-    setField: (key, value) => 
+    fields: initialFields ? new Map(initialFields) : new Map<string, { value: string }>(),
+    setField: (key, value) => {
+      // Trigger the external callback if provided
+      if (onSetField) {
+        onSetField(key, value);
+      }
+
       set((state) => {
         // Create a new Map instance for immutability to trigger React re-renders
         const newFields = new Map(state.fields);
         newFields.set(key, { value });
         return { fields: newFields };
-      }),
+      });
+    },
   }));
 };
 
@@ -25,13 +38,24 @@ const FormContext = createContext<FormStoreApi | null>(null);
 
 interface FormProviderProps {
   children: React.ReactNode;
+  initialValue?: FieldMap; // "value from props"
+  onSetField?: (key: string, value: string) => void; // "setFunction from props"
 }
 
-export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
-  // Use useRef to ensure the store instance is created only once per provider lifecycle
+export const FormProvider: React.FC<FormProviderProps> = ({ 
+  children, 
+  initialValue, 
+  onSetField 
+}) => {
+  // Use useRef to ensure the store instance is created only once per provider lifecycle.
+  // We pass the props into the factory here.
   const storeRef = useRef<FormStoreApi>(null);
+  
   if (!storeRef.current) {
-    storeRef.current = createFormStore();
+    storeRef.current = createFormStore({ 
+      initialFields: initialValue, 
+      onSetField 
+    });
   }
 
   return (
