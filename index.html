@@ -4,22 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scoped Zustand Form Store</title>
+    <title>Zustand & React Flow Demo</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xyflow/react@12.3.5/dist/style.css" />
+    <script>
+      // Shim process.env for libraries that expect it (like React and Zustand)
+      window.process = { env: { NODE_ENV: 'production' } };
+    </script>
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "zustand": "https://esm.sh/zustand@5.0.3?deps=react@19.0.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/"
-  }
-}
-</script>
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.0.0",
+        "react/": "https://esm.sh/react@19.0.0/",
+        "react-dom": "https://esm.sh/react-dom@19.0.0",
+        "react-dom/": "https://esm.sh/react-dom@19.0.0/",
+        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+        "zustand": "https://esm.sh/zustand@5.0.3?deps=react@19.0.0",
+        "react-router-dom": "https://esm.sh/react-router-dom@6.28.0?deps=react@19.0.0,react-dom@19.0.0",
+        "@xyflow/react": "https://esm.sh/@xyflow/react@12.3.5?deps=react@19.0.0,react-dom@19.0.0"
+      }
+    }
+    </script>
+    <style>
+      /* Ensure the root container takes full height for React Flow layout calculation */
+      #root {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+      }
+      .react-flow__node-editable {
+        background: transparent;
+        padding: 0;
+        border: none;
+      }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="bg-slate-50 text-slate-900 overflow-hidden m-0 p-0">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
 </body>
