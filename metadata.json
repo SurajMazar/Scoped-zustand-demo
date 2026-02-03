@@ -1,0 +1,5 @@
+{
+  "name": "Scoped Zustand Form Store",
+  "description": "A demonstration of a scoped Zustand store initialized within a React Context Provider, utilizing an immutable JavaScript Map for state management.",
+  "requestFramePermissions": []
+}
