@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useFormContext } from '../store/FormStore';
+import { useFormContext } from '../store/FormStore.tsx';
 
 const PasswordComponent: React.FC = () => {
   const password = useFormContext((state) => state.fields.get('password')?.value || '');

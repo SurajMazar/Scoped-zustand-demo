@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useFormContext } from '../store/FormStore';
+import { useFormContext } from '../store/FormStore.tsx';
 
 const NameComponent: React.FC = () => {
   // Select only the pieces of state this component needs

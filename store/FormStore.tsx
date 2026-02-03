@@ -1,8 +1,7 @@
 
 import React, { createContext, useContext, useRef } from 'react';
-import { createStore, StoreApi } from 'zustand';
-import { useStore } from 'zustand';
-import { FormState, FieldMap } from '../types';
+import { createStore, StoreApi, useStore } from 'zustand';
+import { FormState } from '../types.ts';
 
 // The type for our vanilla store API
 export type FormStoreApi = StoreApi<FormState>;
@@ -30,7 +29,7 @@ interface FormProviderProps {
 
 export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
   // Use useRef to ensure the store instance is created only once per provider lifecycle
-  const storeRef = useRef<FormStoreApi>();
+  const storeRef = useRef<FormStoreApi>(null);
   if (!storeRef.current) {
     storeRef.current = createFormStore();
   }

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useFormContext } from '../store/FormStore';
+import { useFormContext } from '../store/FormStore.tsx';
 
 const DebugView: React.FC = () => {
   const fields = useFormContext((state) => state.fields);

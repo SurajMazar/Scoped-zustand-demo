@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { FormProvider } from './store/FormStore';
-import NameComponent from './components/NameComponent';
-import PasswordComponent from './components/PasswordComponent';
-import DebugView from './components/DebugView';
+import { FormProvider } from './store/FormStore.tsx';
+import NameComponent from './components/NameComponent.tsx';
+import PasswordComponent from './components/PasswordComponent.tsx';
+import DebugView from './components/DebugView.tsx';
 
 const App: React.FC = () => {
   return (
