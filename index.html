@@ -1,29 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zustand & React Flow Demo</title>
+    <title>Advanced Flow Editor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xyflow/react@12.3.5/dist/style.css" />
-    <script>
-      // Crucial: Provide process.env before any libraries load
-      window.process = { env: { NODE_ENV: 'production' } };
-    </script>
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@19.0.0",
-        "react/": "https://esm.sh/react@19.0.0/",
-        "react-dom": "https://esm.sh/react-dom@19.0.0",
-        "react-dom/": "https://esm.sh/react-dom@19.0.0/",
-        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-        "zustand": "https://esm.sh/zustand@5.0.3?deps=react@19.0.0",
-        "react-router-dom": "https://esm.sh/react-router-dom@6.28.0?deps=react@19.0.0,react-dom@19.0.0",
-        "@xyflow/react": "https://esm.sh/@xyflow/react@12.3.5?deps=react@19.0.0,react-dom@19.0.0"
-      }
-    }
-    </script>
     <style>
       #root {
         height: 100vh;
@@ -31,7 +14,7 @@
         display: flex;
         flex-direction: column;
       }
-      /* Custom scrollbar for better aesthetics */
+      /* Custom scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -47,6 +30,18 @@
         background: #94a3b8;
       }
     </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "zustand": "https://esm.sh/zustand@^5.0.11",
+    "@xyflow/react": "https://esm.sh/@xyflow/react@^12.10.0"
+  }
+}
+</script>
 </head>
 <body class="bg-slate-50 text-slate-900 m-0 p-0 overflow-hidden">
     <div id="root"></div>
